@@ -1,0 +1,107 @@
+:root {
+    font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 400;
+
+    color: #0f0f0f;
+    background-color: #f6f6f6;
+
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-text-size-adjust: 100%;
+}
+
+@font-face {
+    font-family: Roboto;
+    src: url(assets/fonts/Roboto-Medium.ttf);
+    font-weight: 500;
+}
+
+@font-face {
+    font-family: Roboto;
+    src: url(assets/fonts/Roboto-Regular.ttf);
+    font-weight: normal;
+}
+
+@font-face {
+    font-family: Roboto;
+    src: url(assets/fonts/Roboto-Thin.ttf);
+    font-weight: 100;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    font-family: Roboto, serif;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.today {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.today .weather-icon {
+    width: 200px;
+}
+
+.today .degree-text {
+    font-size: 67px;
+    font-weight: 100;
+}
+
+.today .date {
+    font-size: 16px;
+    font-weight: 300;
+    padding-bottom: 0.8rem;
+}
+
+.today .time {
+    font-size: 23px;
+    font-weight: 500;
+}
+
+.timeline {
+    display: flex;
+    justify-content: start;
+    overflow-y: scroll;
+}
+
+.timeline .weather-icon {
+    height: 30px;
+}
+
+.timeline .degree-text {
+    font-size: 17px;
+}
+
+.padding-right {
+    padding-right: 1.4rem;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        color: #f6f6f6;
+        background-color: #263238;
+    }
+}
