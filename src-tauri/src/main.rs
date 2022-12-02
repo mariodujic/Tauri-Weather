@@ -3,8 +3,12 @@ all(not(debug_assertions), target_os = "windows"),
 windows_subsystem = "windows"
 )]
 
+extern crate core;
+
 use std::string::String;
 
+use chrono::{Timelike};
+use dateparser::parse;
 use serde::{Deserialize, Serialize};
 use tauri::{Manager, PhysicalSize, Size};
 
@@ -22,18 +26,31 @@ async fn get_weather() -> Vec<Day> {
     let weather = weather::get_weather().await;
     return if weather.is_ok() {
         let _weather = weather.unwrap();
+
         let temperature: Vec<Day> = _weather.properties.timeseries
             .into_iter()
-            .map(|e| {
-                let temperature = e.data.instant.details.air_temperature;
-                let time = e.time;
+            .enumerate()
+            .filter(|(i, e)| {
+                let temperature_time = &e.time;
+                let temperature_time = parse(&*temperature_time).unwrap();
+                *i == 0 || temperature_time.hour() == 12
+            })
+            .map(|(_, e)| {
+
                 let next_hour = e.data.next_1_hours;
+                let next_six_hours = e.data.next_6_hours;
+                let next_twelve_hours = e.data.next_12_hours;
+
                 let icon = if next_hour.is_some() {
                     next_hour.unwrap().summary.symbol_code
+                } else if next_six_hours.is_some() {
+                    next_six_hours.unwrap().summary.symbol_code
                 } else {
-                    String::new()
+                    next_twelve_hours.unwrap().summary.symbol_code
                 };
-                Day { temperature, time, icon }
+                let temperature = e.data.instant.details.air_temperature;
+                let temperature_time = e.time;
+                Day { temperature, time: temperature_time, icon }
             })
             .collect();
         temperature

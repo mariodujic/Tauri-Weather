@@ -56,11 +56,12 @@
 }
 
 .today .weather-icon {
-    width: 200px;
+    height: 200px;
 }
 
 .today .degree-text {
     font-size: 67px;
+    padding-top: 2rem;
     font-weight: 100;
 }
 
@@ -79,6 +80,8 @@
     display: flex;
     justify-content: start;
     overflow-y: scroll;
+    cursor: pointer;
+    padding: 0.7rem;
 }
 
 .timeline .weather-icon {

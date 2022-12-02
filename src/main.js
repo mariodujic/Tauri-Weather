@@ -11,25 +11,26 @@ async function get_degrees() {
 
         const temperature = value["temperature"]
         const symbol = value["icon"]
+        const dayDate = new Date(value["time"])
 
         // Day container
-        const dayElement = document.createElement("div")
-        dayElement.className = "column padding-right"
+        const dayContainer = document.createElement("div")
+        dayContainer.className = "column padding-right"
 
         // Weather icon
         const iconElement = document.createElement("img")
         iconElement.src = `/assets/${symbol}.svg`
         iconElement.className = 'weather-icon'
-        dayElement.appendChild(iconElement)
+        dayContainer.appendChild(iconElement)
 
         // Weather degrees
         const degreesElement = document.createElement("p")
         degreesElement.textContent = `${temperature}°`
         degreesElement.className = "degree-text"
-        dayElement.append(degreesElement)
+        dayContainer.append(degreesElement)
 
         if (i === 0) {
-            todayElement.append(dayElement)
+            todayElement.append(dayContainer)
 
             const dayDate = new Date(value["time"])
             dateElement.textContent = dayDate.toLocaleString(undefined, {
@@ -38,17 +39,26 @@ async function get_degrees() {
                 day: '2-digit',
                 weekday: "long"
             })
-
-            const currentDate = new Date()
-            timeElement.textContent = currentDate.toLocaleString(undefined, {
-                hour: '2-digit',
-                hour12: false,
-                minute: '2-digit',
-                second: '2-digit'
-            })
+            setInterval(runCurrentTime, 1000)
         } else {
-            degreesRowElement.append(dayElement)
+            const dayElement = document.createElement("p")
+            dayElement.textContent = dayDate.toLocaleString(undefined, {
+                weekday: "long"
+            })
+            dayElement.className = "degree-text"
+            dayContainer.prepend(dayElement)
+            degreesRowElement.append(dayContainer)
         }
+    })
+}
+
+function runCurrentTime() {
+    const currentDate = new Date()
+    timeElement.textContent = currentDate.toLocaleString(undefined, {
+        hour: '2-digit',
+        hour12: false,
+        minute: '2-digit',
+        second: '2-digit'
     })
 }
 
