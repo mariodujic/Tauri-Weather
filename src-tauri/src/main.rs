@@ -22,8 +22,8 @@ struct Day {
 }
 
 #[tauri::command]
-async fn get_weather() -> Vec<Day> {
-    let weather = weather::get_weather().await;
+async fn get_weather(lat: f32, lon: f32) -> Vec<Day> {
+    let weather = weather::get_weather(lat, lon).await;
     return if weather.is_ok() {
         let _weather = weather.unwrap();
 

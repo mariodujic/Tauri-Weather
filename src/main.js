@@ -6,7 +6,7 @@ let dateElement;
 let timeElement;
 
 async function get_degrees() {
-    const degrees = await invoke("get_weather");
+    const degrees = await invoke("get_weather", {lat: 43.5147, lon: 16.4435});
     degrees.forEach((value, i) => {
 
         const temperature = value["temperature"]

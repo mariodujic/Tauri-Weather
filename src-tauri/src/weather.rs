@@ -145,12 +145,13 @@ pub struct Details3 {
     pub precipitation_amount: f64,
 }
 
-const URL: &str = "https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=43.5147&lon=16.4435";
+const URL: &str = "https://api.met.no/weatherapi/locationforecast/2.0/compact";
 
-pub(crate) async fn get_weather() -> Result<Weather, Box<dyn std::error::Error>> {
+pub(crate) async fn get_weather(lat: f32, lon: f32) -> Result<Weather, Box<dyn std::error::Error>> {
     let client = reqwest::Client::new();
     let body = client
         .get(URL)
+        .query(&[("lat", lat), ("lon", lon)])
         .header(USER_AGENT, "My Rust Program 1.0")
         .send()
         .await?
