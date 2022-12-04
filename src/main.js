@@ -5,6 +5,10 @@ let todayElement;
 let dateElement;
 let timeElement;
 
+async function get_cities() {
+    const cities = await invoke("get_cities");
+}
+
 async function get_degrees() {
     const degrees = await invoke("get_weather", {lat: 43.5147, lon: 16.4435});
     degrees.forEach((value, i) => {
@@ -67,5 +71,6 @@ window.addEventListener("DOMContentLoaded", () => {
     todayElement = document.querySelector("#today");
     dateElement = document.querySelector("#date");
     timeElement = document.querySelector("#time");
+    get_cities().then()
     get_degrees().then()
 });

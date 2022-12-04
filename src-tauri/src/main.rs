@@ -5,14 +5,25 @@ windows_subsystem = "windows"
 
 extern crate core;
 
+use std::fs;
 use std::string::String;
 
-use chrono::{Timelike};
+use chrono::Timelike;
 use dateparser::parse;
 use serde::{Deserialize, Serialize};
 use tauri::{Manager, PhysicalSize, Size};
 
+use crate::city::City;
+
 mod weather;
+mod city;
+
+#[tauri::command]
+async fn get_cities() -> Vec<City> {
+    let file = fs::read_to_string("database/cities.json").unwrap();
+    let cities = serde_json::from_str::<Vec<City>>(&*file).expect("JSON was not well-formatted");
+    return cities;
+}
 
 #[derive(Serialize, Deserialize, Debug)]
 struct Day {
@@ -36,7 +47,6 @@ async fn get_weather(lat: f32, lon: f32) -> Vec<Day> {
                 *i == 0 || temperature_time.hour() == 12
             })
             .map(|(_, e)| {
-
                 let next_hour = e.data.next_1_hours;
                 let next_six_hours = e.data.next_6_hours;
                 let next_twelve_hours = e.data.next_12_hours;
@@ -45,8 +55,10 @@ async fn get_weather(lat: f32, lon: f32) -> Vec<Day> {
                     next_hour.unwrap().summary.symbol_code
                 } else if next_six_hours.is_some() {
                     next_six_hours.unwrap().summary.symbol_code
-                } else {
+                } else if next_twelve_hours.is_some() {
                     next_twelve_hours.unwrap().summary.symbol_code
+                } else {
+                    String::from("")
                 };
                 let temperature = e.data.instant.details.air_temperature;
                 let temperature_time = e.time;
@@ -68,7 +80,7 @@ async fn main() {
             main_window.set_max_size(Option::Some(Size::Physical(PhysicalSize { width: 350, height: 620 }))).unwrap();
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![get_weather])
+        .invoke_handler(tauri::generate_handler![get_weather, get_cities])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
