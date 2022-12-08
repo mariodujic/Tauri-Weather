@@ -19,10 +19,14 @@ mod weather;
 mod city;
 
 #[tauri::command]
-async fn get_cities() -> Vec<City> {
+async fn get_cities(city: String) -> Vec<City> {
     let file = fs::read_to_string("database/cities.json").unwrap();
     let cities = serde_json::from_str::<Vec<City>>(&*file).expect("JSON was not well-formatted");
-    return cities;
+    let filtered_cities: Vec<City> = cities
+        .into_iter()
+        .filter(|e| e.name.to_lowercase() == city.to_lowercase())
+        .collect();
+    return filtered_cities;
 }
 
 #[derive(Serialize, Deserialize, Debug)]

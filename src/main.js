@@ -6,7 +6,8 @@ let dateElement;
 let timeElement;
 
 async function get_cities() {
-    const cities = await invoke("get_cities");
+    const cityName = "Split"
+    const cities = await invoke("get_cities", {city: cityName});
 }
 
 async function get_degrees() {
