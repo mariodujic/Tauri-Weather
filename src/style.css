@@ -76,6 +76,12 @@
     font-weight: 500;
 }
 
+.today .city {
+    padding-top: 2rem;
+    font-size: 55px;
+    font-weight: 100;
+}
+
 .timeline {
     display: flex;
     justify-content: start;

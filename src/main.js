@@ -4,14 +4,14 @@ let degreesRowElement;
 let todayElement;
 let dateElement;
 let timeElement;
+let cityElement;
 
-async function get_cities() {
-    const cityName = "Split"
-    const cities = await invoke("get_cities", {city: cityName});
+async function get_cities(city) {
+    const cities = await invoke("get_cities", {city});
 }
 
-async function get_degrees() {
-    const degrees = await invoke("get_weather", {lat: 43.5147, lon: 16.4435});
+async function get_degrees(lat, lon) {
+    const degrees = await invoke("get_weather", {lat, lon});
     degrees.forEach((value, i) => {
 
         const temperature = value["temperature"]
@@ -72,6 +72,8 @@ window.addEventListener("DOMContentLoaded", () => {
     todayElement = document.querySelector("#today");
     dateElement = document.querySelector("#date");
     timeElement = document.querySelector("#time");
-    get_cities().then()
-    get_degrees().then()
+    cityElement = document.querySelector("#city");
+    cityElement.textContent = "Split"
+    get_cities("Split").then()
+    get_degrees(43.5147, 16.4435).then()
 });
