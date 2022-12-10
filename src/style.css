@@ -47,6 +47,36 @@
     overflow: hidden;
 }
 
+.locations {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: start;
+    position: absolute;
+    color: #0f0f0f;
+    background-color: #f6f6f6;
+    height: 100%;
+    width: 100%;
+}
+
+.locations .query {
+    width: 100%;
+    text-align: center;
+    padding: 0.3rem;
+    font-size: 17px;
+    resize: none;
+    outline: none;
+    border: none;
+}
+
+.locations .results {
+    font-size: 15px;
+    padding: 0.6rem;
+    cursor: pointer;
+    width: 100%;
+}
+
 .today {
     flex: 1 1 auto;
     display: flex;

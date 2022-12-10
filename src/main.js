@@ -5,9 +5,12 @@ let todayElement;
 let dateElement;
 let timeElement;
 let cityElement;
+let locationsElement;
+let queryElement;
+let resultsElement;
 
-async function get_cities(city) {
-    const cities = await invoke("get_cities", {city});
+async function get_locations(location) {
+    return await invoke("get_locations", {location});
 }
 
 async function get_degrees(lat, lon) {
@@ -67,13 +70,47 @@ function runCurrentTime() {
     })
 }
 
+const debounce = function(fn, millis) {
+    let timer;
+    return function() {
+        let context = this;
+        let args = arguments;
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            fn.apply(context, args);
+        }, millis);
+    }
+}
+
+function findLocation() {
+    get_locations(queryElement.value).then(locations => {
+        resultsElement.replaceChildren()
+        locations.forEach(location => {
+            const resultElement = document.createElement("p")
+            resultElement.textContent = `${location["name"]}, ${location["admin1"]}, ${location["country"]}`
+            resultElement.addEventListener('click', function () {
+                const name = location["name"]
+                cityElement.textContent = name
+                const lat = parseFloat(location["lat"])
+                const lon = parseFloat(location["lon"])
+                get_degrees(lat, lon)
+                    .then(() => {locationsElement.style.display = "none"})
+                    .catch(reason => alert(reason))
+            })
+            resultsElement.appendChild(resultElement)
+        })
+    })
+}
+
 window.addEventListener("DOMContentLoaded", () => {
     degreesRowElement = document.querySelector("#timeline");
     todayElement = document.querySelector("#today");
     dateElement = document.querySelector("#date");
     timeElement = document.querySelector("#time");
     cityElement = document.querySelector("#city");
-    cityElement.textContent = "Split"
-    get_cities("Split").then()
-    get_degrees(43.5147, 16.4435).then()
+    locationsElement = document.querySelector("#locations")
+    queryElement = document.querySelector("#query")
+    resultsElement = document.querySelector("#results")
+
+    queryElement.addEventListener('input', debounce(findLocation, 500));
 });

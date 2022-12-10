@@ -13,18 +13,18 @@ use dateparser::parse;
 use serde::{Deserialize, Serialize};
 use tauri::{Manager, PhysicalSize, Size};
 
-use crate::city::City;
+use crate::location::Location;
 
 mod weather;
-mod city;
+mod location;
 
 #[tauri::command]
-async fn get_cities(city: String) -> Vec<City> {
+async fn get_locations(location: String) -> Vec<Location> {
     let file = fs::read_to_string("database/cities.json").unwrap();
-    let cities = serde_json::from_str::<Vec<City>>(&*file).expect("JSON was not well-formatted");
-    let filtered_cities: Vec<City> = cities
+    let cities = serde_json::from_str::<Vec<Location>>(&*file).expect("JSON was not well-formatted");
+    let filtered_cities: Vec<Location> = cities
         .into_iter()
-        .filter(|e| e.name.to_lowercase() == city.to_lowercase())
+        .filter(|e| e.name.to_lowercase().contains(&location.to_lowercase()))
         .collect();
     return filtered_cities;
 }
@@ -84,7 +84,7 @@ async fn main() {
             main_window.set_max_size(Option::Some(Size::Physical(PhysicalSize { width: 350, height: 620 }))).unwrap();
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![get_weather, get_cities])
+        .invoke_handler(tauri::generate_handler![get_weather, get_locations])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
