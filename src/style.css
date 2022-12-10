@@ -63,18 +63,19 @@
 .locations .query {
     width: 100%;
     text-align: center;
-    padding: 0.3rem;
-    font-size: 17px;
+    padding: 0.4rem;
+    font-size: 18px;
     resize: none;
     outline: none;
     border: none;
 }
 
 .locations .results {
-    font-size: 15px;
-    padding: 0.6rem;
+    font-size: 16px;
+    padding: 0.7rem;
     cursor: pointer;
     width: 100%;
+    text-overflow: ellipsis;
 }
 
 .today {
@@ -89,7 +90,7 @@
     height: 200px;
 }
 
-.today .degree-text {
+.today .temperature {
     font-size: 67px;
     padding-top: 2rem;
     font-weight: 100;
@@ -104,12 +105,14 @@
 .today .time {
     font-size: 23px;
     font-weight: 500;
+    text-overflow: ellipsis;
 }
 
-.today .city {
+.today .location {
     padding-top: 2rem;
     font-size: 55px;
     font-weight: 100;
+    cursor: pointer;
 }
 
 .timeline {
@@ -124,7 +127,7 @@
     height: 30px;
 }
 
-.timeline .degree-text {
+.timeline .temperature {
     font-size: 17px;
 }
 
