@@ -1,5 +1,6 @@
 const {invoke} = window.__TAURI__.tauri;
 
+let weatherElement;
 let degreesRowElement;
 let todayElement;
 let locationsElement;
@@ -37,16 +38,19 @@ function addTimeElement() {
     const timeElement = document.createElement("p")
     timeElement.id = "time"
     timeElement.className = "time"
-    const currentDate = new Date()
-    setInterval(() => {
+    updateTime()
+    setInterval(updateTime, 1000)
+    todayElement.append(timeElement)
+
+    function updateTime() {
+        const currentDate = new Date()
         timeElement.textContent = currentDate.toLocaleString(undefined, {
             hour: '2-digit',
             hour12: false,
             minute: '2-digit',
             second: '2-digit'
         })
-    }, 1000)
-    todayElement.append(timeElement)
+    }
 }
 
 function addLocationElement(location) {
@@ -115,6 +119,7 @@ const debounce = function (fn, millis) {
 
 function showLocationsScreen() {
     locationsElement.style.display = "block"
+    weatherElement.style.display = "none"
     clearWeatherContent()
 }
 
@@ -125,6 +130,7 @@ function clearWeatherContent() {
 
 function showWeatherScreen() {
     locationsElement.style.display = "none"
+    weatherElement.style.display = "flex"
     clearLocationsContent()
 }
 
@@ -153,6 +159,7 @@ function searchLocation() {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
+    weatherElement = document.querySelector("#weather");
     degreesRowElement = document.querySelector("#timeline");
     todayElement = document.querySelector("#today");
     locationsElement = document.querySelector("#locations")
