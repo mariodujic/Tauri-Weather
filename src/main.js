@@ -17,7 +17,7 @@ async function getWeather(lat, lon) {
 
 async function populateWeatherScreen(lat, lon, location) {
     const weather = await getWeather(lat, lon)
-
+    clearWeatherScreen()
     const dateElement = document.createElement("div")
     populateDateElement()
     addTimeElement()
@@ -114,11 +114,13 @@ const debounce = function (fn, millis) {
     }
 }
 
-function showLocationsScreen() {
-    locationsElement.style.display = "block"
-    weatherElement.style.display = "none"
-    todayElement.replaceChildren()
-    degreesRowElement.replaceChildren()
+let weatherUpdateInterval;
+const WEATHER_UPDATE_MILLIS = 30000
+
+function runWeatherStream(lat, lon, name) {
+    weatherUpdateInterval = setInterval(() => {
+        populateWeatherScreen(lat, lon, name).catch(reason => alert(reason))
+    }, WEATHER_UPDATE_MILLIS)
 }
 
 function showWeatherScreen() {
@@ -126,6 +128,18 @@ function showWeatherScreen() {
     weatherElement.style.display = "flex"
     queryElement.value = ""
     resultsElement.replaceChildren()
+}
+
+function clearWeatherScreen() {
+    todayElement.replaceChildren()
+    degreesRowElement.replaceChildren()
+}
+
+function showLocationsScreen() {
+    locationsElement.style.display = "block"
+    weatherElement.style.display = "none"
+    clearWeatherScreen()
+    clearInterval(weatherUpdateInterval)
 }
 
 function searchLocation() {
@@ -138,16 +152,21 @@ function searchLocation() {
                 const name = location["name"]
                 const lat = parseFloat(location["lat"])
                 const lon = parseFloat(location["lon"])
-                populateWeatherScreen(lat, lon, name)
-                    .then(() => {
-                        cacheSelectedLocation(location)
-                        showWeatherScreen()
-                    })
-                    .catch(reason => alert(reason))
+                populateWeatherAndCacheLocation(lat, lon, name)
+                runWeatherStream(lat, lon, name)
             })
             resultsElement.appendChild(resultElement)
         })
     })
+}
+
+function populateWeatherAndCacheLocation(lat, lon, name) {
+    populateWeatherScreen(lat, lon, name)
+        .then(() => {
+            cacheSelectedLocation(location)
+            showWeatherScreen()
+        })
+        .catch(reason => alert(reason))
 }
 
 const LOCATION_KEY = "weather_location_key"
@@ -163,15 +182,14 @@ function getCachedLocation() {
     return location
 }
 
-function loadCachedLocation() {
+function loadCachedLocationWeather() {
     const location = getCachedLocation()
     if (location !== undefined) {
         const name = location["name"]
         const lat = parseFloat(location["lat"])
         const lon = parseFloat(location["lon"])
-        populateWeatherScreen(lat, lon, name)
-            .then(() => cacheSelectedLocation(location))
-            .catch(reason => alert(reason))
+        populateWeatherScreen(lat, lon, name).catch(reason => alert(reason))
+        runWeatherStream(lat, lon, name)
         showWeatherScreen()
     }
 }
@@ -185,5 +203,5 @@ window.addEventListener("DOMContentLoaded", () => {
     queryElement = document.querySelector("#query")
     queryElement.addEventListener('input', debounce(searchLocation, 500));
 
-    loadCachedLocation()
+    loadCachedLocationWeather()
 });
