@@ -7,8 +7,8 @@ let locationsElement;
 let queryElement;
 let resultsElement;
 
-async function getLocations(location) {
-    return await invoke("get_locations", {location});
+async function getLocations(query) {
+    return await invoke("get_locations", {query});
 }
 
 async function getWeather(lat, lon) {

@@ -1,9 +1,11 @@
+use chrono::Timelike;
+use dateparser::parse;
 use reqwest::header::USER_AGENT;
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct Weather {
+pub struct WeatherResponse {
     pub geometry: Geometry,
     pub properties: Properties,
 }
@@ -147,7 +149,7 @@ pub struct Details3 {
 
 const URL: &str = "https://api.met.no/weatherapi/locationforecast/2.0/compact";
 
-pub(crate) async fn get_weather(lat: f32, lon: f32) -> Result<Weather, Box<dyn std::error::Error>> {
+pub(crate) async fn get_weather(lat: f32, lon: f32) -> Result<WeatherResponse, Box<dyn std::error::Error>> {
     let client = reqwest::Client::new();
     let body = client
         .get(URL)
@@ -157,6 +159,51 @@ pub(crate) async fn get_weather(lat: f32, lon: f32) -> Result<Weather, Box<dyn s
         .await?
         .text()
         .await?;
-    let weather: Weather = serde_json::from_str(&body)?;
+    let weather: WeatherResponse = serde_json::from_str(&body)?;
     Ok(weather)
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Weather {
+    temperature: f64,
+    time: String,
+    icon: String,
+}
+
+pub(crate) async fn retrieve_weather(lat: f32, lon: f32) -> Vec<Weather> {
+    let weather = get_weather(lat, lon).await;
+    return if weather.is_ok() {
+        let _weather = weather.unwrap();
+
+        let temperature: Vec<Weather> = _weather.properties.timeseries
+            .into_iter()
+            .enumerate()
+            .filter(|(i, e)| {
+                let temperature_time = &e.time;
+                let temperature_time = parse(&*temperature_time).unwrap();
+                *i == 0 || temperature_time.hour() == 12
+            })
+            .map(|(_, e)| {
+                let next_hour = e.data.next_1_hours;
+                let next_six_hours = e.data.next_6_hours;
+                let next_twelve_hours = e.data.next_12_hours;
+
+                let icon = if next_hour.is_some() {
+                    next_hour.unwrap().summary.symbol_code
+                } else if next_six_hours.is_some() {
+                    next_six_hours.unwrap().summary.symbol_code
+                } else if next_twelve_hours.is_some() {
+                    next_twelve_hours.unwrap().summary.symbol_code
+                } else {
+                    String::from("")
+                };
+                let temperature = e.data.instant.details.air_temperature;
+                let temperature_time = e.time;
+                Weather { temperature, time: temperature_time, icon }
+            })
+            .collect();
+        temperature
+    } else {
+        vec![]
+    };
 }
