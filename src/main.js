@@ -68,17 +68,14 @@ function addDayElements(weather, index, dateElement) {
     const symbol = weather["icon"]
     const dayDate = new Date(weather["time"])
 
-    // Day container
     const dayContainer = document.createElement("div")
     dayContainer.className = "column padding-right"
 
-    // Weather icon
     const iconElement = document.createElement("img")
     iconElement.src = `/assets/${symbol}.svg`
     iconElement.className = 'weather-icon'
     dayContainer.appendChild(iconElement)
 
-    // Weather degrees
     const temperatureElement = document.createElement("p")
     temperatureElement.textContent = `${temperature}°`
     temperatureElement.className = "temperature"
@@ -120,10 +117,6 @@ const debounce = function (fn, millis) {
 function showLocationsScreen() {
     locationsElement.style.display = "block"
     weatherElement.style.display = "none"
-    clearWeatherContent()
-}
-
-function clearWeatherContent() {
     todayElement.replaceChildren()
     degreesRowElement.replaceChildren()
 }
@@ -131,10 +124,6 @@ function clearWeatherContent() {
 function showWeatherScreen() {
     locationsElement.style.display = "none"
     weatherElement.style.display = "flex"
-    clearLocationsContent()
-}
-
-function clearLocationsContent() {
     queryElement.value = ""
     resultsElement.replaceChildren()
 }
@@ -150,7 +139,10 @@ function searchLocation() {
                 const lat = parseFloat(location["lat"])
                 const lon = parseFloat(location["lon"])
                 populateWeatherScreen(lat, lon, name)
-                    .then(() => showWeatherScreen())
+                    .then(() => {
+                        cacheSelectedLocation(location)
+                        showWeatherScreen()
+                    })
                     .catch(reason => alert(reason))
             })
             resultsElement.appendChild(resultElement)
@@ -158,13 +150,40 @@ function searchLocation() {
     })
 }
 
+const LOCATION_KEY = "weather_location_key"
+
+function cacheSelectedLocation(location) {
+    const locationValue = JSON.stringify(location)
+    localStorage.setItem(LOCATION_KEY, locationValue)
+}
+
+function getCachedLocation() {
+    const locationValue = localStorage.getItem(LOCATION_KEY)
+    const location = JSON.parse(locationValue)
+    return location
+}
+
+function loadCachedLocation() {
+    const location = getCachedLocation()
+    if (location !== undefined) {
+        const name = location["name"]
+        const lat = parseFloat(location["lat"])
+        const lon = parseFloat(location["lon"])
+        populateWeatherScreen(lat, lon, name)
+            .then(() => cacheSelectedLocation(location))
+            .catch(reason => alert(reason))
+        showWeatherScreen()
+    }
+}
+
 window.addEventListener("DOMContentLoaded", () => {
     weatherElement = document.querySelector("#weather");
     degreesRowElement = document.querySelector("#timeline");
     todayElement = document.querySelector("#today");
     locationsElement = document.querySelector("#locations")
-    queryElement = document.querySelector("#query")
     resultsElement = document.querySelector("#results")
-
+    queryElement = document.querySelector("#query")
     queryElement.addEventListener('input', debounce(searchLocation, 500));
+
+    loadCachedLocation()
 });

@@ -81,7 +81,8 @@ async fn main() {
         .setup(|app| {
             let main_window = app.get_window("main").unwrap();
             main_window.set_always_on_top(true).unwrap();
-            main_window.set_max_size(Option::Some(Size::Physical(PhysicalSize { width: 350, height: 620 }))).unwrap();
+            let screen_size = Size::Physical(PhysicalSize { width: 350, height: 620 });
+            main_window.set_max_size(Some(screen_size)).unwrap();
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![get_weather, get_locations])
