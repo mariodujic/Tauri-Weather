@@ -1,5 +1,6 @@
 const {invoke} = window.__TAURI__.tauri;
 
+let loadingElement;
 let weatherElement;
 let degreesRowElement;
 let todayElement;
@@ -20,6 +21,14 @@ async function populateWeatherScreen(location) {
     const lat = parseFloat(location["lat"])
     const lon = parseFloat(location["lon"])
     const weather = await getWeather(lat, lon)
+        .then(weather => {
+            hideLoadingElement()
+            return weather
+        })
+        .catch(reason => {
+            hideLoadingElement()
+            return reason
+        })
     clearWeatherScreen()
     const dateElement = document.createElement("div")
     populateDateElement()
@@ -138,20 +147,31 @@ function clearWeatherScreen() {
     degreesRowElement.replaceChildren()
 }
 
+function showLoadingElement() {
+    loadingElement.style.display = "flex"
+}
+
+function hideLoadingElement() {
+    loadingElement.style.display = "none"
+}
+
 function showLocationsScreen() {
+    clearInterval(weatherUpdateInterval)
     locationsElement.style.display = "block"
     weatherElement.style.display = "none"
     clearWeatherScreen()
-    clearInterval(weatherUpdateInterval)
 }
 
 function searchLocation() {
-    getLocations(queryElement.value).then(locations => {
+    const query = queryElement.value
+    getLocations(query).then(locations => {
         resultsElement.replaceChildren()
         locations.forEach(location => {
             const resultElement = document.createElement("p")
             resultElement.textContent = `${location["name"]}, ${location["admin1"]}, ${location["country"]}`
             resultElement.addEventListener('click', function () {
+                showLoadingElement()
+                showWeatherScreen()
                 populateWeatherAndCacheLocation(location)
                 runWeatherStream(location)
             })
@@ -164,7 +184,6 @@ function populateWeatherAndCacheLocation(location) {
     populateWeatherScreen(location)
         .then(() => {
             cacheSelectedLocation(location)
-            showWeatherScreen()
         })
         .catch(reason => alert(reason))
 }
@@ -185,6 +204,7 @@ function getCachedLocation() {
 function loadCachedLocationWeather() {
     const location = getCachedLocation()
     if (location !== null) {
+        showLoadingElement()
         populateWeatherScreen(location).catch(reason => alert(reason))
         runWeatherStream(location)
         showWeatherScreen()
@@ -192,13 +212,14 @@ function loadCachedLocationWeather() {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
+    loadingElement = document.querySelector("#loading");
     weatherElement = document.querySelector("#weather");
     degreesRowElement = document.querySelector("#timeline");
     todayElement = document.querySelector("#today");
     locationsElement = document.querySelector("#locations")
     resultsElement = document.querySelector("#results")
     queryElement = document.querySelector("#query")
-    queryElement.addEventListener('input', debounce(searchLocation, 500));
+    queryElement.addEventListener('input', debounce(searchLocation, 300));
 
     loadCachedLocationWeather()
 });

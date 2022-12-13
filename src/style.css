@@ -141,6 +141,20 @@
     justify-content: center;
 }
 
+.loading {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+}
+
+.loading .progress-indicator {
+    width: 100px;
+    height: 100px;
+}
+
 @media (prefers-color-scheme: dark) {
     :root {
         color: #f6f6f6;
