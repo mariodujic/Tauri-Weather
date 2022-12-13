@@ -15,13 +15,16 @@ async function getWeather(lat, lon) {
     return await invoke("get_weather", {lat, lon});
 }
 
-async function populateWeatherScreen(lat, lon, location) {
+async function populateWeatherScreen(location) {
+    const name = location["name"]
+    const lat = parseFloat(location["lat"])
+    const lon = parseFloat(location["lon"])
     const weather = await getWeather(lat, lon)
     clearWeatherScreen()
     const dateElement = document.createElement("div")
     populateDateElement()
     addTimeElement()
-    addLocationElement(location)
+    addLocationElement(name)
 
     function populateDateElement() {
         dateElement.id = "date"
@@ -53,11 +56,11 @@ function addTimeElement() {
     }
 }
 
-function addLocationElement(location) {
+function addLocationElement(locationName) {
     const locationsElement = document.createElement("p")
     locationsElement.id = "location"
     locationsElement.className = "location"
-    locationsElement.textContent = location
+    locationsElement.textContent = locationName
     locationsElement.addEventListener('click', showLocationsScreen)
     todayElement.append(locationsElement)
 }
@@ -117,9 +120,9 @@ const debounce = function (fn, millis) {
 let weatherUpdateInterval;
 const WEATHER_UPDATE_MILLIS = 30000
 
-function runWeatherStream(lat, lon, name) {
+function runWeatherStream(location) {
     weatherUpdateInterval = setInterval(() => {
-        populateWeatherScreen(lat, lon, name).catch(reason => alert(reason))
+        populateWeatherScreen(location).catch(reason => alert(reason))
     }, WEATHER_UPDATE_MILLIS)
 }
 
@@ -149,19 +152,16 @@ function searchLocation() {
             const resultElement = document.createElement("p")
             resultElement.textContent = `${location["name"]}, ${location["admin1"]}, ${location["country"]}`
             resultElement.addEventListener('click', function () {
-                const name = location["name"]
-                const lat = parseFloat(location["lat"])
-                const lon = parseFloat(location["lon"])
-                populateWeatherAndCacheLocation(lat, lon, name)
-                runWeatherStream(lat, lon, name)
+                populateWeatherAndCacheLocation(location)
+                runWeatherStream(location)
             })
             resultsElement.appendChild(resultElement)
         })
     })
 }
 
-function populateWeatherAndCacheLocation(lat, lon, name) {
-    populateWeatherScreen(lat, lon, name)
+function populateWeatherAndCacheLocation(location) {
+    populateWeatherScreen(location)
         .then(() => {
             cacheSelectedLocation(location)
             showWeatherScreen()
@@ -184,12 +184,9 @@ function getCachedLocation() {
 
 function loadCachedLocationWeather() {
     const location = getCachedLocation()
-    if (location !== undefined) {
-        const name = location["name"]
-        const lat = parseFloat(location["lat"])
-        const lon = parseFloat(location["lon"])
-        populateWeatherScreen(lat, lon, name).catch(reason => alert(reason))
-        runWeatherStream(lat, lon, name)
+    if (location !== null) {
+        populateWeatherScreen(location).catch(reason => alert(reason))
+        runWeatherStream(location)
         showWeatherScreen()
     }
 }
