@@ -2,8 +2,8 @@
   "build": {
     "beforeDevCommand": "",
     "beforeBuildCommand": "",
-    "devPath": "../src",
-    "distDir": "../src",
+    "devPath": "../src-tauri/src",
+    "distDir": "../src-tauri/src",
     "withGlobalTauri": true
   },
   "package": {
@@ -33,7 +33,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.dev",
+      "identifier": "com.tauri.weather",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
@@ -42,7 +42,10 @@
         "providerShortName": null,
         "signingIdentity": null
       },
-      "resources": [],
+      "resources": [
+        "./database/cities.json",
+        "database/cities.json"
+      ],
       "shortDescription": "",
       "targets": "all",
       "windows": {

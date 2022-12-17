@@ -1,4 +1,5 @@
 use std::fs;
+use std::path::PathBuf;
 use std::string::String;
 
 use serde::{Deserialize, Serialize};
@@ -12,12 +13,12 @@ pub struct Location {
     pub lon: String,
 }
 
-pub(crate) async fn get_filtered_locations(query: String) -> Vec<Location> {
+pub(crate) async fn get_filtered_locations(query: String, resource_path: PathBuf) -> Vec<Location> {
     if query.is_empty() {
         return vec![];
     }
-    let file = fs::read_to_string("database/cities.json").unwrap();
-    let cities = serde_json::from_str::<Vec<Location>>(&*file).expect("JSON was not well-formatted");
+    let file_content = fs::read_to_string(resource_path.to_str().unwrap()).unwrap();
+    let cities = serde_json::from_str::<Vec<Location>>(&*file_content).expect("JSON was not well-formatted");
     let filtered_cities: Vec<Location> = cities
         .into_iter()
         .filter(|e| e.name.to_lowercase().contains(&query.to_lowercase()))

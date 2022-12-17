@@ -5,7 +5,7 @@ windows_subsystem = "windows"
 
 extern crate core;
 
-use tauri::{CustomMenuItem, Manager, PhysicalSize, Size, SystemTray, SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem, WindowBuilder, WindowUrl};
+use tauri::{AppHandle, CustomMenuItem, Manager, PhysicalSize, Size, SystemTray, SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem, WindowBuilder, WindowUrl, Wry};
 
 use crate::location::{get_filtered_locations, Location};
 use crate::weather::{retrieve_weather, Weather};
@@ -14,8 +14,13 @@ mod weather;
 mod location;
 
 #[tauri::command]
-async fn get_locations(query: String) -> Vec<Location> {
-    return get_filtered_locations(query).await;
+async fn get_locations(query: String, handle: AppHandle<Wry>) -> Vec<Location> {
+
+    let resource_path = handle.path_resolver()
+        .resolve_resource("database/cities.json")
+        .expect("Failed to resolve resource");
+
+    return get_filtered_locations(query, resource_path).await;
 }
 
 #[tauri::command]

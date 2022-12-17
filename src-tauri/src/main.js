@@ -84,7 +84,7 @@ function addDayElements(weather, index, dateElement) {
     dayContainer.className = "column padding-right"
 
     const iconElement = document.createElement("img")
-    iconElement.src = `/assets/${symbol}.svg`
+    iconElement.src = `assets/icons/${symbol}.svg`
     iconElement.className = 'weather-icon'
     dayContainer.appendChild(iconElement)
 
