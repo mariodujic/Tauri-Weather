@@ -43,7 +43,6 @@
         "signingIdentity": null
       },
       "resources": [
-        "./database/cities.json",
         "database/cities.json"
       ],
       "shortDescription": "",

@@ -219,7 +219,7 @@ window.addEventListener("DOMContentLoaded", () => {
     locationsElement = document.querySelector("#locations")
     resultsElement = document.querySelector("#results")
     queryElement = document.querySelector("#query")
-    queryElement.addEventListener('input', debounce(searchLocation, 300));
+    queryElement.addEventListener('input', debounce(searchLocation, 1000));
 
     loadCachedLocationWeather()
 });
