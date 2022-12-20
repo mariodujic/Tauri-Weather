@@ -1485,18 +1485,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "libayatana-appindicator"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0379d22a323947cb27b4dbe3b14fc1dcde07c9e9c3eca52ddf97ca0819c28cc4"
-dependencies = [
- "glib",
- "gtk",
- "gtk-sys",
- "log",
-]
-
-[[package]]
 name = "libc"
 version = "0.2.137"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3664,7 +3652,6 @@ version = "0.0.0"
 dependencies = [
  "chrono",
  "dateparser",
- "libayatana-appindicator",
  "reqwest",
  "serde",
  "serde_json",

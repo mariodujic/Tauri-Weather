@@ -21,7 +21,6 @@ tokio = { version = "1.22.0", features = ["full"] }
 reqwest = { version = "0.11.13"}
 dateparser = "0.1.7"
 chrono = "0.4.23"
-libayatana-appindicator="0.2.0"
 
 [features]
 # by default Tauri runs in production mode
