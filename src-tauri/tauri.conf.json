@@ -62,10 +62,10 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 600,
+        "height": 620,
         "resizable": true,
         "title": "Weather",
-        "width": 800
+        "width": 350
       }
     ]
   }
